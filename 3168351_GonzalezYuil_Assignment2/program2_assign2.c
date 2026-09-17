@@ -7,7 +7,7 @@ Collaborators: N/A
 Other sources: Copilot
 Author: Ana Gonzalez Yuil
 Creation Date: 9.14.26
-Revision Date: 9.14.26
+Revision Date: 9.16.26
 Revisions: N/A
 */
 
@@ -19,12 +19,13 @@ Revisions: N/A
 #define MAX_EMAILS 1000
 #define MAX_LINE 512
 
+//myC: Email struct holds sender, subject, and dates with size limit on each
 typedef struct {
     char sender[50];
     char subject[200];
     char date[11];   // MM-DD-YYYY
 } Email;
-
+// myC: Maxheap struct holds an Email array and its size
 typedef struct {
     Email heap[MAX_EMAILS];
     int size;
@@ -34,6 +35,7 @@ typedef struct {
     Utility Functions
 --------------------------------------------------*/
 
+//myC: function below determines sender priority by comparing the sender str to the accepted sender types 
 int getSenderPriority(const char *sender) {
     if (strcmp(sender, "Boss") == 0)
         return 5;
@@ -69,18 +71,20 @@ int convertDate(const char *date) {
 */
 int compareEmails(Email e1, Email e2) {
 
-    int p1 = getSenderPriority(e1.sender);
-    int p2 = getSenderPriority(e2.sender);
+    int p1 = getSenderPriority(e1.sender); //myC: priority of first email
+    int p2 = getSenderPriority(e2.sender); //myC: priority of second email
 
-    if (p1 != p2)
+    if (p1 != p2) //myC: if priorities differ, retunr diff
         return p1 - p2;
 
+    //myC: otherwise, return the difference of their dates
     int d1 = convertDate(e1.date);
     int d2 = convertDate(e2.date);
 
     return d1 - d2;
 }
 
+// myC: basic swapping funciton. to be used for MaxHeap functions
 void swap(Email *a, Email *b) {
     Email temp = *a;
     *a = *b;
@@ -91,19 +95,21 @@ void swap(Email *a, Email *b) {
     Heap Functions
 --------------------------------------------------*/
 
+
 void heapifyUp(MaxHeap *h, int index) {
 
     while (index > 0) {
 
         int parent = (index - 1) / 2;
-
+        
+        //myC: if current email is higher pri than parent email
         if (compareEmails(h->heap[index],
                           h->heap[parent]) > 0) {
 
             swap(&h->heap[index],
-                 &h->heap[parent]);
+                 &h->heap[parent]); //myC: swap 
 
-            index = parent;
+            index = parent; //myC: move to index of former parent to follow email
         }
         else {
             break;
@@ -113,32 +119,35 @@ void heapifyUp(MaxHeap *h, int index) {
 
 void heapifyDown(MaxHeap *h, int index) {
 
-    while (1) {
+    while (1) { //myc: continously downheap until none of the conditions are met (fully ordered)
 
         int left = 2 * index + 1;
         int right = 2 * index + 2;
         int largest = index;
 
+        // myC: if left index is less than the size of MaxHeap (max index) and 
+        // left pri is greater than current pri
         if (left < h->size &&
             compareEmails(h->heap[left],
                           h->heap[largest]) > 0) {
 
-            largest = left;
+            largest = left; //myC: the new highest pri is the email to the left
         }
 
+        //myc: if right index is less than size of MaxHeap (max index) and 
+        // right pri is greater than current pri
         if (right < h->size &&
             compareEmails(h->heap[right],
                           h->heap[largest]) > 0) {
 
-            largest = right;
+            largest = right; //myc: new highest pri is the email to the right
         }
 
-        if (largest != index) {
-
+        if (largest != index) {//myc: if current is not the largest pri
             swap(&h->heap[index],
-                 &h->heap[largest]);
+                 &h->heap[largest]); //myc: swap the current and largest pri emails
 
-            index = largest;
+            index = largest;// assign largest index value to index
         }
         else {
             break;
@@ -197,23 +206,25 @@ void processEMAIL(MaxHeap *heap, char *data) {
 
     char *token;
 
+    //myC: EMAIL line is split using "," as a delimiter
+
     token = strtok(data, ",");
     if (token == NULL) return;
-    strcpy(email.sender, token);
+    strcpy(email.sender, token); //myc: copies sender string to Email struct sender 
 
     token = strtok(NULL, ",");
     if (token == NULL) return;
-    strcpy(email.subject, token);
+    strcpy(email.subject, token); //myc: copies subject string to Email struct subject 
 
     token = strtok(NULL, ",");
-    if (token == NULL) return;
+    if (token == NULL) return; 
 
     while (*token == ' ')
         token++;
 
-    strcpy(email.date, token);
+    strcpy(email.date, token); //myc: copies date string to Email struct date
 
-    insertEmail(heap, email);
+    insertEmail(heap, email); //myc: add fully structured email to heap
 }
 
 void processNEXT(MaxHeap *heap) {
@@ -249,29 +260,38 @@ void processCOUNT(MaxHeap *heap) {
     Main
 --------------------------------------------------*/
 
-int main(int argc, char *argv[]) {
+// int main(int argc, char *argv[]) {
 
-    if (argc != 2) {
-        printf("Usage: %s <inputfile>\n", argv[0]);
-        return 1;
-    }
+int main(){
 
-    FILE *fp = fopen(argv[1], "r");
+    // if (argc != 2) {
+    //     printf("Usage: %s test.txt\n", argv[0]);
+    //     return 1;
+    // }
+
+    // //printf and scanf added by Ana
+    // char filename; 
+
+    // printf("filename: ");
+    // scanf("%d", &filename);
+
+    FILE *fp = fopen("test.txt" , "r");
 
     if (fp == NULL) {
         printf("Unable to open file.\n");
         return 1;
     }
 
-    MaxHeap heap;
-    heap.size = 0;
+    MaxHeap heap; //myc: declare heap for current file being read
+    heap.size = 0; //myc: initialize heap size
 
-    char line[MAX_LINE];
+    char line[MAX_LINE]; //myc: size buffer for reaging file lines
 
     while (fgets(line, sizeof(line), fp)) {
 
         line[strcspn(line, "\n")] = '\0';
 
+        //myc: if statement block compares command names to determine which function to call
         if (strncmp(line, "EMAIL ", 6) == 0) {
 
             char data[MAX_LINE];

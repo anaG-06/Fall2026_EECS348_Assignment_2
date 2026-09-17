@@ -7,7 +7,7 @@ Collaborators: N/A
 Other sources: Gemini
 Author: Ana Gonzalez Yuil
 Creation Date: 9.14.26
-Revision Date: 9.14.26
+Revision Date: 9.16.26
 Revisions: N/A
 */
 
@@ -32,7 +32,7 @@ typedef struct {
 
 // Structure to represent the Array-Based Max Heap
 typedef struct {
-    Email data[MAX_EMAILS]; //my comment: Email with the name data and max size of 1000, serves as our "list"
+    Email data[MAX_EMAILS]; //my comment: Email array with the name data and max size of 1000, serves as our "list"
     int size;
 } MaxHeap;
 
@@ -158,8 +158,8 @@ void process_commands(const char *filename) {
         if (strncmp(line, "EMAIL", 5) == 0) {
             // Parse EMAIL command: EMAIL <sender category>, <subject line>, <MM-DD-YYYY>
             char *content = line + 6; // Skip "EMAIL "
-            char *comma1 = strchr(content, ',');
-            char *comma2 = strrchr(content, ',');
+            char *comma1 = strchr(content, ','); //my comment: returns a pointer to first instance of char (,)
+            char *comma2 = strrchr(content, ','); //my commenr: returns a pointer to last instance of char (,)
             
             if (comma1 && comma2 && comma1 != comma2) {
                 Email new_email;
@@ -217,7 +217,7 @@ void process_commands(const char *filename) {
 
 int main(int argc, char *argv[]) { //NEEDS SOME FORM OF USER INPUT
     if (argc < 2) {
-        printf("Usage: %s <commands_file.txt>\n", argv[0]);
+        printf("Usage: %s <test.txt>\n", argv[0]);
         return 1;
     }
     
