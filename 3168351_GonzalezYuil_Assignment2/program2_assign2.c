@@ -7,8 +7,8 @@ Collaborators: N/A
 Other sources: Copilot
 Author: Ana Gonzalez Yuil
 Creation Date: 9.14.26
-Revision Date: 9.16.26
-Revisions: N/A
+Revision Date: 9.17.26
+Revisions: added detailed comments
 */
 
 //all code below from copilot
@@ -121,8 +121,8 @@ void heapifyDown(MaxHeap *h, int index) {
 
     while (1) { //myc: continously downheap until none of the conditions are met (fully ordered)
 
-        int left = 2 * index + 1;
-        int right = 2 * index + 2;
+        int left = 2 * index + 1; //myc: calculates left of current index
+        int right = 2 * index + 2;//myc: calculates right of current index
         int largest = index;
 
         // myC: if left index is less than the size of MaxHeap (max index) and 
@@ -155,45 +155,46 @@ void heapifyDown(MaxHeap *h, int index) {
     }
 }
 
-void insertEmail(MaxHeap *h, Email email) {
+void insertEmail(MaxHeap *h, Email email) {//myc: arguments: dereferenced heap pointer, email Struct
 
-    if (h->size >= MAX_EMAILS) {
-        printf("Heap is full.\n");
-        return;
+    if (h->size >= MAX_EMAILS) {//myc: if the size of heap is greater than or eq to max amt of emails
+        printf("Heap is full.\n"); //myc: notify that heap if full, do not add to heap
+        return;//myc: exit function 
     }
 
-    h->heap[h->size] = email;
-    heapifyUp(h, h->size);
+    h->heap[h->size] = email; //myc: add email to end of MaxHeap array
+    heapifyUp(h, h->size); //myc: heapify email as needed
 
-    h->size++;
+    h->size++;//myc: increment heap size
 }
 
 Email removeMax(MaxHeap *h) {
 
-    Email emptyEmail = {"", "", ""};
+    Email emptyEmail = {"", "", ""}; //myc: create empty email placeholder
 
-    if (h->size == 0)
+    if (h->size == 0) //myc: if heap is empty, return placeholder, avoids garbage return
         return emptyEmail;
 
-    Email maxEmail = h->heap[0];
+    //myc: otherwise
+    Email maxEmail = h->heap[0]; //myc:create Email to store highest pri Email
 
-    h->size--;
+    h->size--; //myc: decrement heap size
 
-    h->heap[0] = h->heap[h->size];
+    h->heap[0] = h->heap[h->size]; //myc: remove and replace top email
 
-    heapifyDown(h, 0);
+    heapifyDown(h, 0); //myc:heapify down as needed to restore order
 
-    return maxEmail;
+    return maxEmail; //myc: return highest pri email
 }
 
-Email getMax(MaxHeap *h) {
+Email getMax(MaxHeap *h) { //myc: equivalent to generic peek method for MaxHeaps 
 
-    Email emptyEmail = {"", "", ""};
+    Email emptyEmail = {"", "", ""}; //myc: create empty Email placeholder
 
-    if (h->size == 0)
+    if (h->size == 0) //myc: if heap is empty, return placeholder, avoids garbage return
         return emptyEmail;
 
-    return h->heap[0];
+    return h->heap[0]; //myc: otherwise return highest pri email w/o removing 
 }
 
 /*--------------------------------------------------
@@ -229,13 +230,15 @@ void processEMAIL(MaxHeap *heap, char *data) {
 
 void processNEXT(MaxHeap *heap) {
 
-    if (heap->size == 0) {
-        printf("No unread emails.\n");
+    if (heap->size == 0) { //myc: if heap is empty
+        printf("No unread emails.\n"); //myc: notify user and return, no next email to show
         return;
     }
 
-    Email top = getMax(heap);
+    //myc: otherwise
+    Email top = getMax(heap); //myc: get top pri email
 
+    //myc: print with proper formatting
     printf("Next Email:\n");
     printf("Sender: %s\n", top.sender);
     printf("Subject: %s\n", top.subject);
@@ -244,16 +247,16 @@ void processNEXT(MaxHeap *heap) {
 
 void processREAD(MaxHeap *heap) {
 
-    if (heap->size == 0) {
-        printf("No unread emails.\n");
+    if (heap->size == 0) { //myc: if heap is empty
+        printf("No unread emails.\n"); //myc: notify user and return, no next email to process
         return;
     }
 
-    removeMax(heap);
+    removeMax(heap); //myc: remove top email
 }
 
 void processCOUNT(MaxHeap *heap) {
-    printf("Unread Emails: %d\n", heap->size);
+    printf("Unread Emails: %d\n", heap->size); //myc: return size of heap 
 }
 
 /*--------------------------------------------------
@@ -275,9 +278,9 @@ int main(){
     // printf("filename: ");
     // scanf("%d", &filename);
 
-    FILE *fp = fopen("test.txt" , "r");
+    FILE *fp = fopen("test.txt" , "r"); //<----- myc: manually add file name here
 
-    if (fp == NULL) {
+    if (fp == NULL) { //myc: if file given does not exist 
         printf("Unable to open file.\n");
         return 1;
     }
@@ -285,7 +288,7 @@ int main(){
     MaxHeap heap; //myc: declare heap for current file being read
     heap.size = 0; //myc: initialize heap size
 
-    char line[MAX_LINE]; //myc: size buffer for reaging file lines
+    char line[MAX_LINE]; //myc: size buffer for reading file lines
 
     while (fgets(line, sizeof(line), fp)) {
 
